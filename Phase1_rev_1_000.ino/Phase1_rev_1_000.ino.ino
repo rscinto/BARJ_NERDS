@@ -29,11 +29,13 @@ void loop()
   //For testing purpose
   Serial.println("Analog value : " + String(lightValue));
 
+  // Map "measured environmental light values to RGB LED's lowest to highest brightness settings
   int lightLevel = map(lightValue, 45, 700, 0, 255);
 
+  // Assign LEDs to analog light level based on environment
   analogWrite(LED_PIN1, lightLevel);
   analogWrite(LED_PIN2, lightLevel);
-  delay(100);
+  delay(100); // use delay for user perceived smoothness
 }
  
  
