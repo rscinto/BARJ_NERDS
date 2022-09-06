@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM4",
+    "sketch": "Phase1_rev_1_000.ino\\Phase1_rev_1_000.ino.ino"
+}
