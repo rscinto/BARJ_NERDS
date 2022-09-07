@@ -12,12 +12,12 @@
 
 // Arbitrary Value Definitions
 #define WATER_THRESHOLD 100
-#define MAX_LIGHT_VALUE 700
-#define MIN_LIGHT_VALUE 45
+#define MAX_DARKNESS_VALUE 700
+#define MIN_DARKNESS_VALUE 45
 
 //For Calibration
-int floorLightValue;
-int ceilingLightValue;
+int maxLightValue;
+int minLightValue;
 
 void setup()
 {
@@ -49,60 +49,64 @@ void loop()
   /* LightValue calibration
      At a certain point light values get arbitrarily too high or too low so correct
   */
-  if(lightValue > MAX_LIGHT_VALUE){
-    lightValue = MAX_LIGHT_VALUE;
+  if(lightValue > MAX_DARKNESS_VALUE){
+    lightValue = MAX_DARKNESS_VALUE;
   }
-  else if(lightValue < MIN_LIGHT_VALUE )
+  else if(lightValue < MIN_DARKNESS_VALUE)
   {
-    lightValue = MIN_LIGHT_VALUE ;
+    lightValue = MIN_DARKNESS_VALUE ;
   }
 
   //For testing purpose
   Serial.println("Analog Light value: " + String(lightValue));
   Serial.println("Analog Water value: " + String(waterValue));
+  Serial.println("maxLightValue: " + String(maxLightValue));
+  Serial.println("minLightValue: " + String(minLightValue));
 
   // Map "measured environmental light values to RGB LED's lowest to highest brightness settings
-  int lightLevel = map(lightValue, MIN_LIGHT_VALUE , MAX_LIGHT_VALUE, 0, 255);
+  int lightLevel = map(lightValue, MIN_DARKNESS_VALUE, MAX_DARKNESS_VALUE, 0, 255);
 
   // Assign LEDs to analog light level based on environment
-  analogWrite(LED_1, lightLevel);
-  analogWrite(LED_2, lightLevel);
+  
   delay(100); // use delay for user perceived smoothness
 
   
-  while(waterValue > WATER_THRESHOLD)
+  if (waterValue > WATER_THRESHOLD)
   {
     Serial.print("\nWater detected!\n");
-    analogWrite(LED_1, 255);
-    analogWrite(LED_2, 255);
+    lightLevel = 255;
     delay(50);
     waterValue = analogRead(WATER_SENSOR);
   }
+
+  analogWrite(LED_1, lightLevel);
+  analogWrite(LED_2, lightLevel);
   
 
-  Serial.println("floorLightValue: " + String(floorLightValue));
-  Serial.println("ceilingLightValue: " + String(ceilingLightValue));
-  delay(100);
+  
+  delay(1000);
 }
 
 //This is called when CEILING_BUTTON (3) is pressed.
 //The 
 void setCeiling() {
-  ceilingLightValue = analogRead(LIGHT_SENSOR);
+  minLightValue = analogRead(LIGHT_SENSOR);
   
-  if(ceilingLightValue > MAX_LIGHT_VALUE) {
-    ceilingLightValue = MAX_LIGHT_VALUE;
+  if(minLightValue > MAX_DARKNESS_VALUE) {
+    minLightValue = MAX_DARKNESS_VALUE;
   }
 
+  Serial.println("BUTTON PRESSED");
 }
 
 void setFloor() {
-  floorLightValue = analogRead(LIGHT_SENSOR);
+  maxLightValue = analogRead(LIGHT_SENSOR);
 
-  if(floorLightValue < MIN_LIGHT_VALUE ) {
-    floorLightValue = MIN_LIGHT_VALUE ;
+  if(maxLightValue < MIN_DARKNESS_VALUE ) {
+    maxLightValue = MIN_DARKNESS_VALUE ; 
   }
 
+  Serial.println("BUTTON PRESSED");
 }
  
  
