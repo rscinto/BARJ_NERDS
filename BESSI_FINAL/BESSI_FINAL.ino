@@ -1,5 +1,14 @@
 #include <IRremote.h>
 
+/*--------------------Program Constants---------------*/
+
+#define TICK_LENGTH 50
+#define HEADLIGHT_TICK_LENGTH 50
+
+
+/*--------------------Program Globals---------------*/
+
+unsigned long ticks = 0;
 
 /*-----------------------HEADLIGHTS-------------------*/
 
@@ -25,28 +34,20 @@ int minDarkValue;
 int maxDarkValue;
 
 //Sensor Values
-int darknessValue;
-int waterValue;
+unsigned int darknessValue;
+unsigned int waterValue;
 
 //Circular array for brightness checking
-unsigned int lightValues[120] = {0};
-unsigned int lightValuesIndex = 0;
+unsigned int darknessValues[120];
+unsigned int darknessValuesIndex = 0;
 
 //Calculated average brightness
-float lightValuesAvg = 0;
-float lightValuesLowAvg = 0;
-
-//Unsigned input light sensor values
-unsigned int currentLightValue;
-unsigned int prevLightValue;
+float darknessValuesAvg = 0;
+float darknessValuesLowAvg = 0;
 
 //Target and current LED brightness levels
 unsigned int targetLEDBrightnessLevel = 0;
 unsigned int currentLEDBrightnessLevel = 0;
-
-//Unsigned because input should always be 
-unsigned int lightLevel;
-
 
 //Function prototypes
 void setCeiling();
@@ -121,8 +122,6 @@ void setup()
 //--------------IR END-----------------------
 
 
-
-
 //--------------MOTOR-----------------------
     //Set pins as outputs
     pinMode(motorPin1, OUTPUT);
@@ -141,6 +140,12 @@ void setup()
 // BEGIN MAIN LOOP
 void loop()
 {
+  // increment tick counter
+  ++ticks;
+  if (ticks > 4000000000) {
+    ticks = 1;
+  }
+  
   headlights();
 
  /*
@@ -176,6 +181,8 @@ void loop()
       irrecv.resume(); 
   }
   */
+
+  delay(TICK_LENGTH); // sleep for TICK_LENGTH milliseconds
 }
 // END LOOP
 
@@ -199,6 +206,7 @@ void setCeiling() {
 
 //This is called when FLOOR_BUTTON (2) is pressed.
 void setFloor() {
+  Serial.println("FLOOR BUTTON PRESSED");
   
   minDarkValue = analogRead(LIGHT_SENSOR);
   
@@ -207,11 +215,7 @@ void setFloor() {
     minDarkValue = MIN_DARKNESS_VALUE;
   }
   
-  
-  for(int i = 0; i < 3; i++) {
-    blink();
-  }
-  Serial.println("FLOOR BUTTON PRESSED");
+  blink();
 }
 
 void blink() {
