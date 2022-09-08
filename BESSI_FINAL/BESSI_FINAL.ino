@@ -63,25 +63,9 @@ void headlights();
 long durationOfSoundWave; 
 int distanceToWall; 
 
-int findDistanceToWall() {
-    // Clears the trigPin condition
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  
-  // Sets TRIG activ for 10 microseconds
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-  
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  durationOfSoundWave = pulseIn(ECHO, HIGH);
-  
-  // Calculating the distanceToWall
-  distanceToWall = durationOfSoundWave * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
-  
-  Serial.println("Distance to wall: " + String(distanceToWall) + " cm");
-  return distanceToWall;
-}
+// function prototype
+int findDistanceToWall();
+
 //--------------ULTRA SONIC END-----------------------
 
 
@@ -109,42 +93,10 @@ const int motorPin2  = 10;  // Pin 10 of L293     //WRONG BUT WE'RE OK WITH IT N
 const int motorPin3  = 10; // Pin  7 of L293
 const int motorPin4  = 9;  // Pin  2 of L293
 
-void brake()
-{
-  //make the motors stop
-  Serial.println("BRAKE");
-  digitalWrite(motorPin1, LOW);
-  digitalWrite(motorPin2, LOW);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin4, LOW);
-}
-
-void forward()
-{
-  //make motors go
-  Serial.println("FORWARD");
-  digitalWrite(motorPin1, LOW);
-  digitalWrite(motorPin2, HIGH);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin4, HIGH);
-
-  delay(5000);
-
-  digitalWrite(motorPin1, LOW);
-  digitalWrite(motorPin2, LOW);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin4, LOW);
-}
-
-void backward()
-{
-  //make motors go backwards
-  Serial.println("BACKWARD");
-  digitalWrite(motorPin1, LOW);
-  digitalWrite(motorPin2, HIGH);
-  digitalWrite(motorPin3, HIGH);
-  digitalWrite(motorPin4, LOW);
-}
+//function prototypes
+void brake();
+void forward();
+void backward();
 //--------------MOTOR END -----------------------
 
 
@@ -262,7 +214,6 @@ void setFloor() {
   Serial.println("FLOOR BUTTON PRESSED");
 }
 
-
 void blink() {
   Serial.println("BLINKING");
   digitalWrite(LED_1, LOW);
@@ -302,6 +253,7 @@ void setupLights() {
 }
 
 
+// HEADLIGHT LOGIC for loop
 void headlights() {
   darknessValue = analogRead(LIGHT_SENSOR); 
   waterValue = analogRead(WATER_SENSOR);
@@ -338,4 +290,65 @@ void headlights() {
   analogWrite(LED_2, lightLevel);
 
   delay(100);
+}
+
+
+// ULTRASONIC
+int findDistanceToWall() {
+    // Clears the trigPin condition
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+  
+  // Sets TRIG activ for 10 microseconds
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  durationOfSoundWave = pulseIn(ECHO, HIGH);
+  
+  // Calculating the distanceToWall
+  distanceToWall = durationOfSoundWave * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  
+  Serial.println("Distance to wall: " + String(distanceToWall) + " cm");
+  return distanceToWall;
+}
+
+
+// MOTOR
+void brake()
+{
+  //make the motors stop
+  Serial.println("BRAKE");
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, LOW);
+  digitalWrite(motorPin3, LOW);
+  digitalWrite(motorPin4, LOW);
+}
+
+void forward()
+{
+  //make motors go
+  Serial.println("FORWARD");
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, HIGH);
+  digitalWrite(motorPin3, LOW);
+  digitalWrite(motorPin4, HIGH);
+
+  delay(5000);
+
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, LOW);
+  digitalWrite(motorPin3, LOW);
+  digitalWrite(motorPin4, LOW);
+}
+
+void backward()
+{
+  //make motors go backwards
+  Serial.println("BACKWARD");
+  digitalWrite(motorPin1, LOW);
+  digitalWrite(motorPin2, HIGH);
+  digitalWrite(motorPin3, HIGH);
+  digitalWrite(motorPin4, LOW);
 }
