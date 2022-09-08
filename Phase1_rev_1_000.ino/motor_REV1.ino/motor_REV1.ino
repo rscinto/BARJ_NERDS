@@ -1,5 +1,5 @@
 //L293D
-https://www.instructables.com/How-to-use-the-L293D-Motor-Driver-Arduino-Tutorial/
+//https://www.instructables.com/How-to-use-the-L293D-Motor-Driver-Arduino-Tutorial/
 //Motor A
 const int motorPin1  = 5;  // Pin 14 of L293
 const int motorPin2  = 6;  // Pin 10 of L293
