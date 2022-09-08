@@ -193,11 +193,11 @@ unsigned long key_value = 0;
 
 //--------------MOTOR-----------------------
 //Motor A
-const int motorPin1  = 9;  // Pin 14 of L293
-const int motorPin2  = 10;  // Pin 10 of L293     //WRONG BUT WE'RE OK WITH IT NEEDED PWM
+const int motorPin1  = 8;  // Pin 14 of L293 +
+const int motorPin2  = 9;  // Pin 10 of L293  -   //FIXED
 //Motor B
-const int motorPin3  = 10; // Pin  7 of L293
-const int motorPin4  = 9;  // Pin  2 of L293
+const int motorPin3  = 10; // Pin  7 of L293  +
+const int motorPin4  = 11;  // Pin  2 of L293 -
 
 void brake()
 {
@@ -215,15 +215,12 @@ void forward()
   Serial.println("FORWARD");
   digitalWrite(motorPin1, LOW);
   digitalWrite(motorPin2, HIGH);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin4, HIGH);
+  digitalWrite(motorPin3, HIGH);
+  digitalWrite(motorPin4, LOW);
 
   delay(5000);
 
-  digitalWrite(motorPin1, LOW);
-  digitalWrite(motorPin2, LOW);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin4, LOW);
+  brake();
 }
 
 void backward()
@@ -281,7 +278,7 @@ void loop()
 {
   headlights();
 
- /*
+ 
 //--------------ULTRA SONIC-----------------------
 //  if (findDistanceToWall() <= BRAKE_DISTANCE) 
 //  {
@@ -313,5 +310,5 @@ void loop()
       key_value = results.value;
       irrecv.resume(); 
   }
-  */
+  
 }
