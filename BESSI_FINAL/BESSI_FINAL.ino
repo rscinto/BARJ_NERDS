@@ -28,7 +28,7 @@ unsigned long ticks = 0;
 #define WATER_THRESHOLD 100
 #define MIN_DARKNESS_VALUE 75
 #define MAX_DARKNESS_VALUE 700
-#define SMOOTHING_INTERVAL 13
+#define SMOOTHING_INTERVAL 7
 
 //For Calibration of thresholds
 int minDarkValue;
@@ -49,8 +49,8 @@ float darknessValuesAvg = 0;
 float darknessValuesLowAvg = 0;
 
 //Target and current LED brightness levels
-unsigned int targetLEDBrightnessLevel = 0;
-unsigned int currentLEDBrightnessLevel = 0;
+int targetLEDBrightnessLevel = 0;
+int currentLEDBrightnessLevel = 0;
 
 //Function prototypes
 void setCeiling();
