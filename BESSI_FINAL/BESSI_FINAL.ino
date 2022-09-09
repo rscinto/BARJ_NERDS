@@ -28,8 +28,9 @@ unsigned long ticks = 0;
 #define WATER_THRESHOLD 100
 #define MIN_DARKNESS_VALUE 75
 #define MAX_DARKNESS_VALUE 700
+#define SMOOTHING_INTERVAL 13
 
-//For Calibration
+//For Calibration of thresholds
 int minDarkValue;
 int maxDarkValue;
 
@@ -40,6 +41,8 @@ unsigned int waterValue;
 //Circular array for brightness checking
 unsigned int darknessValues[120];
 unsigned int darknessValuesIndex = 0;
+unsigned int darknessShortValues[40];
+unsigned int darknessShortValuesIndex = 0;
 
 //Calculated average brightness
 float darknessValuesAvg = 0;
@@ -55,6 +58,8 @@ void setFloor();
 void blink();
 void setupLights();
 void headlights();
+void pushDarkValue(unsigned int);
+void pushLongDarkValue(unsigned int);
 
 
 //--------------ULTRA SONIC-----------------------
@@ -254,6 +259,12 @@ void setupLights() {
  // Setup default variable values
  minDarkValue = MIN_DARKNESS_VALUE;
  maxDarkValue = MAX_DARKNESS_VALUE;
+ for(int i=0; i < 120; ++i) {
+  darknessValues[i] = 0;
+ }
+ for(int i=0; i < 40; ++i) {
+  darknessShortValues[i] = 0;
+ }
 }
 
 
@@ -262,38 +273,78 @@ void headlights() {
   darknessValue = analogRead(LIGHT_SENSOR); 
   waterValue = analogRead(WATER_SENSOR);
 
-  if (darknessValue< MIN_DARKNESS_VALUE) {
-    darknessValue = MIN_DARKNESS_VALUE;
+  pushDarkValue(darknessValue);
+
+  if (darknessValue < minDarkValue) {
+    darknessValue = minDarkValue;
   }
 
-  if (darknessValue > MAX_DARKNESS_VALUE) {
-    darknessValue = MAX_DARKNESS_VALUE;
+  if (darknessValue > maxDarkValue) {
+    darknessValue = maxDarkValue;
   }
 
   //For testing purpose
   Serial.println("Analog Darkness value: " + String(darknessValue));
-  Serial.println("Light Level: " + String(lightLevel));
+  Serial.println("Target LED Level: " + String(targetLEDBrightnessLevel));
+  Serial.println("Current LED Level: " + String(currentLEDBrightnessLevel));
   Serial.println("Analog Water value: " + String(waterValue));
   Serial.println("minDarkValue: " + String(minDarkValue));
   Serial.println("maxDarkValue: " + String(maxDarkValue));
 
   // Map measured environmental light values to RGB LED's lowest to highest brightness settings
-  lightLevel = map(darknessValue, minDarkValue, maxDarkValue, 0, 255);
+  targetLEDBrightnessLevel = map(darknessValue, minDarkValue, maxDarkValue, 0, 255);
 
-  delay(100); // use delay for user perceived smoothness
-
+  // Check the water sensor to see if it overrides our light sensor reading.
   if (waterValue > WATER_THRESHOLD)
   {
-    Serial.print("\nWater detected!\n");
-    lightLevel = 255;
-    delay(50);
-    waterValue = analogRead(WATER_SENSOR);
+    Serial.println("\nWater detected!\n");
+    targetLEDBrightnessLevel = 255;
   }
 
-  analogWrite(LED_1, lightLevel);
-  analogWrite(LED_2, lightLevel);
+  // Smoothing function
+  if (abs(targetLEDBrightnessLevel - currentLEDBrightnessLevel) > SMOOTHING_INTERVAL) {
+    // Smooth change
+    if ((targetLEDBrightnessLevel - currentLEDBrightnessLevel) > 0 ) {
+      currentLEDBrightnessLevel += SMOOTHING_INTERVAL;
+    } else {
+      currentLEDBrightnessLevel -= SMOOTHING_INTERVAL;
+    }
+  } else {
+    currentLEDBrightnessLevel = targetLEDBrightnessLevel;
+  }
 
-  delay(100);
+  analogWrite(LED_1, currentLEDBrightnessLevel);
+  analogWrite(LED_2, currentLEDBrightnessLevel);
+}
+
+void pushDarkValue(unsigned int value) {
+  darknessShortValues[darknessShortValuesIndex] = value;
+  ++darknessShortValuesIndex;
+  if (darknessShortValuesIndex >= 40) {
+    darknessShortValuesIndex = 0;
+    unsigned int sum = 0;
+    for (int i=0; i < 40; ++i) {
+      sum += darknessShortValues[i];
+    }
+    float darknessShortValuesAvg = float(sum) / float(40);
+    pushLongDarkValue((unsigned int)darknessShortValuesAvg);
+  }
+}
+
+void pushLongDarkValue(unsigned int value) {
+  darknessValues[darknessValuesIndex] = value;
+  ++darknessValuesIndex;
+  if (darknessValuesIndex >= 120) {
+    darknessValuesIndex = 0;
+  }
+  // update average  
+  unsigned int sum = 0;
+  for (int i=0; i < 120; ++i) {
+    sum += darknessValues[i];
+  }
+  darknessValuesAvg = float(sum) / float(120);
+  Serial.println("Added value to array: " + String(value));
+  Serial.println("New light average for last 4 minutes: " + String(darknessValuesAvg));
 }
 
 
