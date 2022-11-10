@@ -5,8 +5,9 @@ https://www.youtube.com/watch?v=QybXbo2XOUA&ab_channel=BenT
 
 ![Alt text](bessiasdf.PNG "Title")
 
-## Driver Assistive Systems [DAS]
-Background
+# Driver Assistive Systems [DAS]
+
+##Background
 Some of the best systems are automated to create a safe experience for all drivers on
 the road. Examples like ABS, automatic braking system and TC or traction control perform very
 well in the background of day to day driving and require little user input. We propose to
@@ -30,13 +31,13 @@ For the cruise control system of DAS the input will require AI assisted intellig
 fed optically with data from road signs. Using this information the cruise control will accelerate or
 slow down to the posted speed when traveling through areas with different speed limits.
 
-## Plan for prototype
-# Phase 1: Implement the headlight system of DAS
+# Plan for prototype
+## Phase 1: Implement the headlight system of DAS
 - DHT11 (Calculate temperature dewpoint spread from temperature and humidity)
 - Photoresistor (Detect light intensity from other cars and sun)
 - Clock module (Used in conjunction with other sensors to turn system on)
 - LEDs for intensity(1 low, 2 medium, 3 high)
-# Phase 2: Implement the automatic cruise control of DAS
+## Phase 2: Implement the automatic cruise control of DAS
 - Motor (Simulates car velocity)
 - Motor controller (Controls car “velocity”)
 - Potentiometer (User input to control car “velocity”)
